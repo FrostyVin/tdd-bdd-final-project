@@ -183,6 +183,46 @@ class TestProductRoutes(TestCase):
         self.assertIn("not found", json_data["message"])
 
     # ----------------------------------------------------------
+    # TEST UPDATE
+    # ----------------------------------------------------------
+    def test_update_product(self):
+        """ It should update a Product """
+        product = ProductFactory()
+        serialized = product.serialize()
+        response = self.client.post(BASE_URL, json=serialized)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        product = response.get_json()
+        product["description"] = "Test update"
+        response = self.client.put(f"{BASE_URL}/{product['id']}", json=product)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        updated = response.get_json()
+        self.assertEqual(updated["description"], "Test update")
+
+    def test_update_product_not_found(self):
+        """ It should return a 404 not found because the id is not found """
+        product = ProductFactory()
+        serialized = product.serialize()
+        response = self.client.put(f"{BASE_URL}/{product.id}", json=serialized)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # ----------------------------------------------------------
+    # TEST DELETE
+    # ----------------------------------------------------------
+    def test_delete_product(self):
+        """ It should delete a Product """
+        products = self._create_products(5)
+        product_count = self.get_product_count()
+        product = products[0]
+        response = self.client.delete(f"{BASE_URL}/{product.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(response.data), 0)
+        response = self.client.get(f"{BASE_URL}/{product.id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        new_count = self.get_product_count()
+        self.assertEqual(new_count, product_count - 1)
+
+    # ----------------------------------------------------------
     # TEST HTTP ERRORS
     # ----------------------------------------------------------
     def test_wrong_method(self):
