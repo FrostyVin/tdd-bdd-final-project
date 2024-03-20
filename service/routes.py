@@ -98,9 +98,12 @@ def create_products():
 # L I S T   A L L   P R O D U C T S
 ######################################################################
 
-#
-# PLACE YOUR CODE TO LIST ALL PRODUCTS HERE
-#
+@app.route("/products", methods=["GET"])
+def get_products():
+    """ Get all Products """
+    products = Product.all()
+    products = [p.serialize() for p in products]
+    return products, status.HTTP_200_OK
 
 ######################################################################
 # R E A D   A   P R O D U C T
