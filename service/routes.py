@@ -89,8 +89,8 @@ def create_products():
     #
     # Uncomment this line of code once you implement READ A PRODUCT
     #
-    # location_url = url_for("get_products", product_id=product.id, _external=True)
-    location_url = "/"  # delete once READ is implemented
+    location_url = url_for("get_product", product_id=product.id, _external=True)
+    # location_url = "/"  # delete once READ is implemented
     return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
 
 
@@ -130,6 +130,7 @@ def get_products():
 # R E A D   A   P R O D U C T
 ######################################################################
 
+
 @app.route("/products/<product_id>", methods=["GET"])
 def get_product(product_id):
     """ Get one product by its id """
@@ -143,13 +144,14 @@ def get_product(product_id):
 # U P D A T E   A   P R O D U C T
 ######################################################################
 
+
 @app.route("/products/<product_id>", methods=["PUT"])
 def update_product(product_id):
     """ Update a Product by its id """
     product = Product.find(int(product_id))
     if product is None:
         abort(status.HTTP_404_NOT_FOUND, "Product not found")
-    
+
     product.deserialize(request.get_json())
     product.id = product_id
     product.update()
@@ -158,6 +160,7 @@ def update_product(product_id):
 ######################################################################
 # D E L E T E   A   P R O D U C T
 ######################################################################
+
 
 @app.route("/products/<product_id>", methods=["DELETE"])
 def delete_product(product_id):

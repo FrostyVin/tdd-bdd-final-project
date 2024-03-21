@@ -134,15 +134,15 @@ class TestProductRoutes(TestCase):
         # Uncomment this code once READ is implemented
         #
 
-        # # Check that the location header was correct
-        # response = self.client.get(location)
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # new_product = response.get_json()
-        # self.assertEqual(new_product["name"], test_product.name)
-        # self.assertEqual(new_product["description"], test_product.description)
-        # self.assertEqual(Decimal(new_product["price"]), test_product.price)
-        # self.assertEqual(new_product["available"], test_product.available)
-        # self.assertEqual(new_product["category"], test_product.category.name)
+        # Check that the location header was correct
+        response = self.client.get(location)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        new_product = response.get_json()
+        self.assertEqual(new_product["name"], test_product.name)
+        self.assertEqual(new_product["description"], test_product.description)
+        self.assertEqual(Decimal(new_product["price"]), test_product.price)
+        self.assertEqual(new_product["available"], test_product.available)
+        self.assertEqual(new_product["category"], test_product.category.name)
 
     def test_create_product_with_no_name(self):
         """It should not Create a Product without a name"""
@@ -247,14 +247,14 @@ class TestProductRoutes(TestCase):
         """ It should find Products by name """
         products = self._create_products(5)
         name = products[0].name
-        name_count = len([p for p in products if p.name == name])
-        
+        found_count = len([p for p in products if p.name == name])
+
         response = self.client.get(BASE_URL, query_string=f"name={name}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), name_count)
-        for d in data:
-            self.assertEqual(d["name"], name)
+        json_data = response.get_json()
+        self.assertEqual(len(json_data), found_count)
+        for data in json_data:
+            self.assertEqual(data["name"], name)
 
     def test_find_by_category(self):
         """ It should find Products by category """
@@ -265,10 +265,10 @@ class TestProductRoutes(TestCase):
 
         response = self.client.get(BASE_URL, query_string=f"category={category.name}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), found_count)
-        for d in data:
-            self.assertEqual(d["category"], category.name)
+        json_data = response.get_json()
+        self.assertEqual(len(json_data), found_count)
+        for data in json_data:
+            self.assertEqual(data["category"], category.name)
 
     def test_find_by_availability(self):
         """ It should find Products by availability """
@@ -278,21 +278,20 @@ class TestProductRoutes(TestCase):
 
         response = self.client.get(BASE_URL, query_string="available=true")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), found_count)
-        for d in data:
-            self.assertEqual(d["available"], True)
-        
-        
+        json_data = response.get_json()
+        self.assertEqual(len(json_data), found_count)
+        for data in json_data:
+            self.assertEqual(data["available"], True)
+
         found = [p for p in products if p.available is False]
         found_count = len(found)
 
         response = self.client.get(BASE_URL, query_string="available=false")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), found_count)
-        for d in data:
-            self.assertEqual(d["available"], False)
+        json_data = response.get_json()
+        self.assertEqual(len(json_data), found_count)
+        for data in json_data:
+            self.assertEqual(data["available"], False)
 
     def test_find_by_price(self):
         """ It should find Products by price """
@@ -303,10 +302,10 @@ class TestProductRoutes(TestCase):
 
         response = self.client.get(BASE_URL, query_string=f"price={price}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = response.get_json()
-        self.assertEqual(len(data), found_count)
-        for d in data:
-            self.assertEqual(Decimal(d["price"]), price)
+        json_data = response.get_json()
+        self.assertEqual(len(json_data), found_count)
+        for data in json_data:
+            self.assertEqual(Decimal(data["price"]), price)
 
     # ----------------------------------------------------------
     # TEST HTTP ERRORS
@@ -316,7 +315,7 @@ class TestProductRoutes(TestCase):
         test_product = ProductFactory()
         response = self.client.put(BASE_URL, json=test_product.serialize())
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        
+
     ######################################################################
     # Utility functions
     ######################################################################
