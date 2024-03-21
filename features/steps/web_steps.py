@@ -132,3 +132,55 @@ def step_impl(context, element_name, text_string):
     )
     element.clear()
     element.send_keys(text_string)
+
+@when(u'I press the "{button}" button')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: When I press the "Create" button')
+
+
+@then(u'I should see the message "Success"')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see the message "Success"')
+
+@then(u'I should see "Fedora" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see "Fedora" in the results')
+
+
+@then(u'I should not see "Hat" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should not see "Hat" in the results')
+
+@then(u'I should see the message "Product has been Deleted!"')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see the message "Product has been Deleted!"')
+
+
+@then(u'I should see "Hat" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see "Hat" in the results')
+
+
+@then(u'I should see "Shoes" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see "Shoes" in the results')
+
+
+@then(u'I should see "Big Mac" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see "Big Mac" in the results')
+
+
+@then(u'I should see "Sheets" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should see "Sheets" in the results')
+
+
+@then(u'I should not see "Shoes" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should not see "Shoes" in the results')
+
+
+@then(u'I should not see "Sheets" in the results')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then I should not see "Sheets" in the results')
