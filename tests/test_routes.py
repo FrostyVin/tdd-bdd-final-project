@@ -222,6 +222,92 @@ class TestProductRoutes(TestCase):
         new_count = self.get_product_count()
         self.assertEqual(new_count, product_count - 1)
 
+    def test_delete_product_not_found(self):
+        """ It should return a 404 not found because the id is not found """
+        product = ProductFactory()
+        serialized = product.serialize()
+        response = self.client.delete(f"{BASE_URL}/{product.id}", json=serialized)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # ----------------------------------------------------------
+    # TEST LIST PRODUCTS
+    # ----------------------------------------------------------
+    def test_get_all_products(self):
+        """ It should get a list of Products """
+        self._create_products(5)
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), 5)
+
+    # ----------------------------------------------------------
+    # TEST FIND PRODUCTS
+    # ----------------------------------------------------------
+    def test_find_products_by_name(self):
+        """ It should find Products by name """
+        products = self._create_products(5)
+        name = products[0].name
+        name_count = len([p for p in products if p.name == name])
+        
+        response = self.client.get(BASE_URL, query_string=f"name={name}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), name_count)
+        for d in data:
+            self.assertEqual(d["name"], name)
+
+    def test_find_by_category(self):
+        """ It should find Products by category """
+        products = self._create_products(5)
+        category = products[0].category
+        found = [p for p in products if p.category == category]
+        found_count = len(found)
+
+        response = self.client.get(BASE_URL, query_string=f"category={category.name}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), found_count)
+        for d in data:
+            self.assertEqual(d["category"], category.name)
+
+    def test_find_by_availability(self):
+        """ It should find Products by availability """
+        products = self._create_products(5)
+        found = [p for p in products if p.available is True]
+        found_count = len(found)
+
+        response = self.client.get(BASE_URL, query_string="available=true")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), found_count)
+        for d in data:
+            self.assertEqual(d["available"], True)
+        
+        
+        found = [p for p in products if p.available is False]
+        found_count = len(found)
+
+        response = self.client.get(BASE_URL, query_string="available=false")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), found_count)
+        for d in data:
+            self.assertEqual(d["available"], False)
+
+    def test_find_by_price(self):
+        """ It should find Products by price """
+        products = self._create_products(5)
+        price = products[0].price
+        found = [p for p in products if p.price == price]
+        found_count = len(found)
+
+        response = self.client.get(BASE_URL, query_string=f"price={price}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(len(data), found_count)
+        for d in data:
+            self.assertEqual(Decimal(d["price"]), price)
+
     # ----------------------------------------------------------
     # TEST HTTP ERRORS
     # ----------------------------------------------------------

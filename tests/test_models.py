@@ -142,6 +142,13 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(products[0].id, old_id)
         self.assertEqual(products[0].description, "Updated description")
 
+    def test_update_no_id(self):
+        """ It should raise DataValidationError because there is no id in the data """
+        product = ProductFactory()
+        product.id = None
+        with self.assertRaises(DataValidationError):
+            product.update()
+
     def test_delete_a_product(self):
         """ It should delete a Product """
         product = ProductFactory()
@@ -221,3 +228,18 @@ class TestProductModel(unittest.TestCase):
         with self.assertRaises(DataValidationError):
             product.deserialize(serialized)
 
+    def test_deserialize_wrong_category(self):
+        """ It should raise DataValidationError because the category is wrong / not in the Enum """
+        product = ProductFactory()
+        serialized = product.serialize()
+        serialized["category"] = "Unknown category"
+        with self.assertRaises(DataValidationError):
+            product.deserialize(serialized)
+
+    def test_deserialize_wrong_price(self):
+        """ It should raise DataValidationError because the price is not a proper decimal number """
+        product = ProductFactory()
+        serialized = product.serialize()
+        serialized["price"] = {"Test": "Data"}
+        with self.assertRaises(DataValidationError):
+            product.deserialize(serialized)
